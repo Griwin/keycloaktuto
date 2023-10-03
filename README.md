@@ -29,8 +29,9 @@ Une fois le conteneur lancé, accédez à l'interface web de Keycloak à l'adres
 4. Cochez OAuth 2.0 Device Authorization Grant
 5. Activez Client Authentication
 6. Valid redirect URLs https://localhost:7066/*
-7. Récupérer le client secret dans credentials
-8. Créer un user et dans crédential set password non temporary
+7. Valid redirect URLs https://localhost:7066/signin-oidc
+8. Récupérer le client secret dans credentials
+9. Créer un user et dans crédential set password non temporary
 
 
 ## Configuration de ASP.NET Core
@@ -71,7 +72,7 @@ public void ConfigureServices(IServiceCollection services)
 
 ## Exemple d'Utilisation
 
-Créez des contrôleurs ou des actions qui utilisent l'authentification. Par exemple :
+Créez controller qui utilisent l'authentification. Par exemple :
 
 ```csharp
 [Authorize]

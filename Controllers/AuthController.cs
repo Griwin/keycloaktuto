@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-namespace keycloakdavid.Controllers
+
+namespace keycloaktuto.Controllers
 {
     [Authorize]
     [ApiController]
@@ -31,33 +33,9 @@ namespace keycloakdavid.Controllers
             return Redirect("/");
         }
 
-        [HttpGet("profile")]
-        [SwaggerOperation(Summary = "Retrieve the authenticated user's profile")]
-        [SwaggerResponse(200, "Returns the user's profile", typeof(UserProfile))]
-        public IActionResult Profile()
-        {
-            return Ok(new UserProfile
-            {
-                Name = User.Identity.Name,
-                Claims = User.Claims.ToDictionary(c => c.Type, c => c.Value)
-            });
-        }
 
-        [HttpGet("isauthenticated")]
-        [SwaggerOperation(Summary = "Check if the user is authenticated")]
-        [SwaggerResponse(200, "Returns a message if the user is authenticated", typeof(string))]
-        public IActionResult IsAuthenticated()
-        {
-            // Si cette ligne est atteinte, l'utilisateur est authentifié grâce à l'attribut [Authorize]
-            return Ok(new { Message = "Tu es connecté" });
-        }
+
     }
 
-    public class UserProfile
-    {
-        public string Name { get; set; }
-        public Dictionary<string, string> Claims { get; set; }
-    }
 }
-
 

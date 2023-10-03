@@ -47,6 +47,9 @@ Dans `Startup.cs`, ajoutez la configuration suivante :
 
 ```csharp
 // Startup.cs
+using Swashbuckle.AspNetCore.Annotations;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+
 public void ConfigureServices(IServiceCollection services)
 {
     
@@ -64,8 +67,6 @@ public void ConfigureServices(IServiceCollection services)
         options.ClientSecret = "your-client-secret";
         options.ResponseType = "code";
 
-
-        // ... autres options
     });
 }
 ```

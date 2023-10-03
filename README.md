@@ -44,27 +44,27 @@ Dans `Startup.cs`, ajoutez la configuration suivante :
 
 ```csharp
 // Startup.cs
-public void ConfigureServices(IServiceCollection services)
+builder.Services.AddSwaggerGen();
+builder.Services.AddAuthentication(options =>
 {
-    
-    builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = "cookie";
-        options.DefaultSignInScheme = "cookie";
-        options.DefaultChallengeScheme = "oidc";
-    })
-    .AddCookie("cookie")
-    .AddOpenIdConnect("oidc", options =>
-    {
-        options.Authority = "http://localhost:8080/auth/realms/your-realm";
-        options.ClientId = "your-client-id";
-        options.ClientSecret = "your-client-secret";
-        options.ResponseType = "code";
-
-
-        // ... autres options
-    });
-}
+    // Utilisation des valeurs par défaut pour les schémas
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+})
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme) // Schéma pour les cookies
+.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options => // Schéma pour OpenID Connect
+{
+    options.Authority = "http://localhost:8080";
+    options.ClientId = "your-client";
+    options.ClientSecret = "your-client-secret";
+    options.MetadataAddress = "http://localhost:8080/realms/myrealm/.well-known/openid-configuration";
+    options.ResponseType = "code";
+    options.SaveTokens = true;
+    options.GetClaimsFromUserInfoEndpoint = true;
+    options.RequireHttpsMetadata = false;
+});
+var app = builder.Build();
 ```
 
 ## Exemple d'Utilisation
@@ -73,10 +73,32 @@ Créez des contrôleurs ou des actions qui utilisent l'authentification. Par exe
 
 ```csharp
 [Authorize]
-public IActionResult Secure()
-{
-    return View();
-}
+    [ApiController]
+    [Route("[controller]")]
+    public class AuthController : Controller
+    {
+        [AllowAnonymous]
+        [HttpGet("login")]
+        [SwaggerOperation(Summary = "Initiate login via Keycloak")]
+        [SwaggerResponse(302, "Redirects to Keycloak login page")]
+        public IActionResult Login(string returnUrl = "/")
+        {
+            return Challenge(new AuthenticationProperties { RedirectUri = returnUrl }, OpenIdConnectDefaults.AuthenticationScheme);
+        }
+
+        [HttpGet("logout")]
+        [SwaggerOperation(Summary = "Logout from the application and Keycloak")]
+        [SwaggerResponse(302, "Redirects to the home page after logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
+            return Redirect("/");
+        }
+
+
+
+    }
 ```
 
 ## Résumé

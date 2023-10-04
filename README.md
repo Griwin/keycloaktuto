@@ -62,7 +62,8 @@ public void ConfigureServices(IServiceCollection services)
     .AddCookie("cookie")
     .AddOpenIdConnect("oidc", options =>
     {
-        options.Authority = "http://localhost:8080/auth/realms/your-realm";
+        options.Authority = "https://localhost:8080/auth/realms/your-realm";
+        options.MetadataAddress = "http://localhost:8080/realms/myrealm/.well-known/openid-configuration";
         options.ClientId = "your-client-id";
         options.ClientSecret = "your-client-secret";
         options.ResponseType = "code";
